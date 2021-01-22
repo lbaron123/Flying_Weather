@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "onCreate")
 
         u.l(this, "Checking Internet Connected")
-        u.l(this, "Git Change")
+        u.l(this, "Git Change2")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
             u.l(this, "Getting METAR")
