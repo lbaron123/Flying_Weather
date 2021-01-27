@@ -3,7 +3,10 @@ package com.lbaron.flyingweather
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.gson.Gson
+import com.lbaron.flyingweather.data.Metar
+import com.lbaron.flyingweather.data.MetarViewModel
 import com.lbaron.flyingweather.models.MetarResponse
 import com.lbaron.flyingweather.network.MetarAPIService
 import okhttp3.logging.HttpLoggingInterceptor
@@ -14,21 +17,22 @@ import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var mMetarViewModel : MetarViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        u.l(this, "onCreate")
+        mMetarViewModel = ViewModelProvider(this@MainActivity).get(MetarViewModel::class.java)
 
+        u.l(this, "onCreate")
         u.l(this, "Checking Internet Connected")
-        u.l(this, "Git Change2")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
             u.l(this, "Getting METAR")
-            val airport : Array<String> = arrayOf("EGGD", "NZSP", "EGKK", "LFPG","ZZZZ")
+            val airport : Array<String> = arrayOf("EGGD", "EGBB", "LFPG", "LFPG","ZZZZ")
             for (item in airport){
                 u.l(this, item)
-                getMetarAsString(item)
+                getMetar(item)
             }
             u.l(this, "Finished metar code")
         } else {
@@ -37,10 +41,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
-     * Returns the METAR as a string -> Doesn't actually do this
+     * Gets the METAR of this airport and
+     * TODO saves it to the database
+     * TODO When a response is received, it will update the UI
      * @params airport ICAO eg "EGGD"
      */
-    private fun getMetarAsString(airportICAO: String) {
+    private fun getMetar(airportICAO: String) {
         u.l(this, "getMetarAsString")
         u.l(this, "Building Retrofit object")
 
@@ -76,8 +82,9 @@ class MainActivity : AppCompatActivity() {
                     u.l(this@MainActivity, metarResponseJsonString)
                     val metar = Gson().fromJson(metarResponseJsonString, MetarResponse::class.java)
                     u.l(this@MainActivity, metar.raw)
-                    // THis now save the result to preferences
-                    // Preference can only take a couple of types of data - string is one and Json is string so that will do
+                    val metarToAdd = Metar( metar.station, metar.raw)
+                    mMetarViewModel.addMetar(metarToAdd)
+
 
                 } else {
                     val rc = response.code()
