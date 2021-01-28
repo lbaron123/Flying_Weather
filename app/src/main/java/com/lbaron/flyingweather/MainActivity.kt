@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.lbaron.flyingweather.data.Metar
 import com.lbaron.flyingweather.data.MetarViewModel
@@ -18,19 +20,32 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMetarViewModel : MetarViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mMetarViewModel = ViewModelProvider(this@MainActivity).get(MetarViewModel::class.java)
+
+
+        u.l (this, "making dummy recyclerview")
+        val metarList = ArrayList<Metar>()
+        for (i in 0..1000){
+            metarList += Metar("STRING $i", "STRING${i+3}")
+        }
+        val recyclerView = findViewById<RecyclerView>(R.id.metar_recycler_view)
+        val metarList1 = metarList as List<Metar>
+        // Below are the three lines that actually set up the recycler view
+        recyclerView.adapter = MetarItemAdapter(metarList1)
+        recyclerView.layoutManager = LinearLayoutManager(this) // Linear layout manager for a vertical scrolling list
+        recyclerView.setHasFixedSize(true)                              // This is a performance optimisation
+
 
         u.l(this, "onCreate")
         u.l(this, "Checking Internet Connected")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
             u.l(this, "Getting METAR")
-            val airport : Array<String> = arrayOf("EGGD", "EGBB", "LFPG", "LFPG","ZZZZ")
-            for (item in airport){
+            val airports : Array<String> = arrayOf("EGGD", "EGBB", "LFPG", "LFPG","ZZZZ")
+            for (item in airports){
                 u.l(this, item)
                 getMetar(item)
             }
@@ -83,6 +98,7 @@ class MainActivity : AppCompatActivity() {
                     val metar = Gson().fromJson(metarResponseJsonString, MetarResponse::class.java)
                     u.l(this@MainActivity, metar.raw)
                     val metarToAdd = Metar( metar.station, metar.raw)
+                    u.l(this@MainActivity, "Adding ${metar.station} to database")
                     mMetarViewModel.addMetar(metarToAdd)
 
 
@@ -92,7 +108,7 @@ class MainActivity : AppCompatActivity() {
                     val metarResponseJsonString = Gson().toJson(metarResponse)
                     u.e(this@MainActivity, metarResponseJsonString)
                     when (rc) {
-                        400 -> u.e(this@MainActivity,"Error 400 "+ "Bad Request - check airport")
+                        400 -> u.e(this@MainActivity,"Error 400 "+ "Bad Request - check airport: ${call.request().url}")
                         404 -> u.e(this@MainActivity,"Error 404 "+ "Not found")
                         else -> u.e(this@MainActivity,"Error ?? "+ "Generic Error")
                     }

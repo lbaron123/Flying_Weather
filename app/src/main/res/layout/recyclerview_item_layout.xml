@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/ll_metar_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/tv_airport_name"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:text="ICAO Code">
+        </TextView>
+        <TextView
+            android:id="@+id/tv_metar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="metar">
+        </TextView>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>
