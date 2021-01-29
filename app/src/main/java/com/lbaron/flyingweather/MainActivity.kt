@@ -1,12 +1,17 @@
 package com.lbaron.flyingweather
 
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
+import android.view.Window
+import android.widget.Button
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.lbaron.flyingweather.data.Metar
 import com.lbaron.flyingweather.data.MetarViewModel
@@ -26,11 +31,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setupRecyclerView()
-        u.l(this, "onCreate")
+
         u.l(this, "Checking Internet Connected")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
-            u.l(this, "Getting METAR")
             val airports : Array<String> = arrayOf("EGPF", "EGBB", "LFPG", "LFPG","ZZZZ")
             for (item in airports){
                 u.l(this, item)
@@ -40,12 +44,16 @@ class MainActivity : AppCompatActivity() {
         } else {
             u.l(this, "No Internet Connection")
         }
+        // Floating Action Button Code
+        val fabAddAirport = findViewById<FloatingActionButton>(R.id.fab_add_airport)
+        fabAddAirport.setOnClickListener(){
+            showDialog()
+        }
+
     }
 
     /**
-     * Gets the METAR of this airport and
-     * TODO saves it to the database
-     * TODO When a response is received, it will update the UI
+     * Gets the METAR of this airport
      * @params airport ICAO eg "EGGD"
      */
     private fun getMetar(airportICAO: String) {
@@ -133,6 +141,22 @@ class MainActivity : AppCompatActivity() {
             adapter.setData(metars)
         })
         recyclerView.setHasFixedSize(true)                              // This is a performance optimisation
+    }
+
+    private fun showDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.add_airport_dialog)
+        val etIcaoInput : EditText = dialog.findViewById(R.id.et_icao_input)
+
+        val btnSubmitAirport : Button = dialog.findViewById(R.id.btn_submit_airport)
+        btnSubmitAirport.setOnClickListener {
+            getMetar(etIcaoInput.text.toString())
+            dialog.dismiss()
+        }
+        dialog.show()
+
     }
 
 }

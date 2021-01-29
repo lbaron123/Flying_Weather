@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Flying Weather</string>
+    <string name="icao_code">ICAO Code</string>
+    <string name="metar">metar</string>
+    <string name="submit">Submit</string>
 </resources>

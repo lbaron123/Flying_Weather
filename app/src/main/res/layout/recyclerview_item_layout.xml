@@ -11,18 +11,22 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="6dp">
         <TextView
             android:id="@+id/tv_airport_name"
-            android:layout_width="65dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:text="ICAO Code">
+            android:text="@string/icao_code"
+            android:textSize="24sp">
         </TextView>
+
         <TextView
             android:id="@+id/tv_metar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="metar">
-        </TextView>
+            android:gravity="start|center_vertical"
+            android:text="@string/metar"
+            android:textSize="20sp"></TextView>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
