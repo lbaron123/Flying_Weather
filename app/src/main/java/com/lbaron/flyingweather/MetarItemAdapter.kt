@@ -13,7 +13,9 @@ import com.lbaron.flyingweather.data.Metar
  * Implemented onCreateViewHolder onBindViewHolder getItemCount by pressing CTRL-I inside the class
  * @param metarList list of our objects to go into the recyclerview - private becasue it only needs to be accessed in the class
  */
-class MetarItemAdapter(private val metarList: List<Metar>) : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder>() {
+class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder>() {
+
+    private var metarList = emptyList<Metar>()
 
     /**
      * onCreateViewHolder is called by RV when it is time to create a new viewholder
@@ -25,8 +27,8 @@ class MetarItemAdapter(private val metarList: List<Metar>) : RecyclerView.Adapte
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MetarViewHolder {
         // LayoutInflator turns xml into the itemView of the required type
         // Parent is the recyclerview, context is the activity we are in
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item_layout, parent, false)
-        return MetarViewHolder(itemView)
+
+        return MetarViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item_layout, parent, false))
     }
 
     /**
@@ -42,6 +44,7 @@ class MetarItemAdapter(private val metarList: List<Metar>) : RecyclerView.Adapte
         // holder contains references to the views as defined below
         holder.tvAirportName.text = currentItem.station
         holder.tvMetar.text = currentItem.metar
+
     }
 
     override fun getItemCount(): Int {
@@ -59,5 +62,14 @@ class MetarItemAdapter(private val metarList: List<Metar>) : RecyclerView.Adapte
         // imageView : ImageView = itemView.findViewById(R.id.iv_image)  <-- Snytax if the layout has a picture
         val tvAirportName: TextView = itemView.findViewById(R.id.tv_airport_name)
         val tvMetar : TextView = itemView.findViewById(R.id.tv_metar)
+    }
+
+    /**
+     * Takes a list of metars and sets them to the class's internal structure
+     * It then notifies any observers that the data has changed
+     */
+    fun setData(metarListInput: List<Metar>){
+        this.metarList = metarListInput
+        notifyDataSetChanged()
     }
 }

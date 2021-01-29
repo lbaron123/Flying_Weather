@@ -3,6 +3,7 @@ package com.lbaron.flyingweather
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,31 +21,17 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMetarViewModel : MetarViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        mMetarViewModel = ViewModelProvider(this@MainActivity).get(MetarViewModel::class.java)
-
-
-        u.l (this, "making dummy recyclerview")
-        val metarList = ArrayList<Metar>()
-        for (i in 0..1000){
-            metarList += Metar("STRING $i", "STRING${i+3}")
-        }
-        val recyclerView = findViewById<RecyclerView>(R.id.metar_recycler_view)
-        val metarList1 = metarList as List<Metar>
-        // Below are the three lines that actually set up the recycler view
-        recyclerView.adapter = MetarItemAdapter(metarList1)
-        recyclerView.layoutManager = LinearLayoutManager(this) // Linear layout manager for a vertical scrolling list
-        recyclerView.setHasFixedSize(true)                              // This is a performance optimisation
-
-
+        setupRecyclerView()
         u.l(this, "onCreate")
         u.l(this, "Checking Internet Connected")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
             u.l(this, "Getting METAR")
-            val airports : Array<String> = arrayOf("EGGD", "EGBB", "LFPG", "LFPG","ZZZZ")
+            val airports : Array<String> = arrayOf("EGPF", "EGBB", "LFPG", "LFPG","ZZZZ")
             for (item in airports){
                 u.l(this, item)
                 getMetar(item)
@@ -126,4 +113,26 @@ class MainActivity : AppCompatActivity() {
         })
         u.l(this, "Finished building the enqueue")
     }
+
+    /**
+     * This will get the metars from the database and show the recyclerview
+     */
+    private fun setupRecyclerView(){
+        u.l (this, "making dummy recyclerview")
+
+        val recyclerView = findViewById<RecyclerView>(R.id.metar_recycler_view)
+        // Below are the three lines that actually set up the recycler view
+        val adapter = MetarItemAdapter()
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this) // Linear layout manager for a vertical scrolling list
+
+        // Metar viewModel initialisation (database stuff)
+        mMetarViewModel = ViewModelProvider(this ).get(MetarViewModel::class.java)
+        // Calling readAllData (database) and making code to run when it is observed -> to the adapter
+        mMetarViewModel.readAllData.observe( this ,{ metars ->
+            adapter.setData(metars)
+        })
+        recyclerView.setHasFixedSize(true)                              // This is a performance optimisation
+    }
+
 }
