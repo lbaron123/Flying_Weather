@@ -31,4 +31,16 @@ class MetarViewModel(application: Application) : AndroidViewModel(application){
             repository.addMetar(metar)
         }
     }
+
+    fun deleteMetar(metar: Metar){
+        viewModelScope.launch (Dispatchers.IO){
+            repository.deleteMetar(metar)
+        }
+    }
+
+    fun deleteAllMetars(){
+        viewModelScope.launch (Dispatchers.IO){
+            repository.deleteAllMetars()
+        }
+    }
 }

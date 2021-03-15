@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.Window
+import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ import java.io.IOException
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMetarViewModel : MetarViewModel
+    private lateinit var deletedMetar : Metar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,12 +46,16 @@ class MainActivity : AppCompatActivity() {
         } else {
             u.l(this, "No Internet Connection")
         }
-        // Floating Action Button Code
+        // Add airport code
         val fabAddAirport = findViewById<FloatingActionButton>(R.id.fab_add_airport)
         fabAddAirport.setOnClickListener(){
             showDialog()
         }
-
+        // Delete Button Code
+        val fabDeleteAll = findViewById<FloatingActionButton>(R.id.fab_delete_all)
+        fabDeleteAll.setOnClickListener(){
+            mMetarViewModel.deleteAllMetars()
+        }
     }
 
     /**
@@ -60,8 +66,6 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "getMetarAsString")
         u.l(this, "Building Retrofit object")
 
-        //val interceptor = HttpLoggingInterceptor()
-        //interceptor.apply { interceptor.level = HttpLoggingInterceptor.Level.BODY }
         // Builds the URL with the baseURL and our MetarAPIService Call
         val retrofit = Retrofit.Builder()
                 .baseUrl(Constants.API_URL)
@@ -155,7 +159,9 @@ class MainActivity : AppCompatActivity() {
             getMetar(etIcaoInput.text.toString())
             dialog.dismiss()
         }
+        etIcaoInput.requestFocus()
         dialog.show()
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
     }
 

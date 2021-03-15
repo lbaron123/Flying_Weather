@@ -11,7 +11,7 @@ import com.lbaron.flyingweather.data.Metar
  * In agle brackets in RV.Adapter we have out MetarViewHolder defined as a nested class below
  * This shows the default Adapter what viewholder we have to use
  * Implemented onCreateViewHolder onBindViewHolder getItemCount by pressing CTRL-I inside the class
- * @param metarList list of our objects to go into the recyclerview - private becasue it only needs to be accessed in the class
+ * @param metarList list of our objects to go into the recyclerview - private because it only needs to be accessed in the class
  */
 class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder>() {
 
@@ -59,7 +59,7 @@ class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder
      * @param itemView is one instance of our row layout - it contains the references to our textviews
      */
     class MetarViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
-        // imageView : ImageView = itemView.findViewById(R.id.iv_image)  <-- Snytax if the layout has a picture
+        // imageView : ImageView = itemView.findViewById(R.id.iv_image)  <-- Syntax if the layout has a picture
         val tvAirportName: TextView = itemView.findViewById(R.id.tv_airport_name)
         val tvMetar : TextView = itemView.findViewById(R.id.tv_metar)
     }
@@ -73,3 +73,10 @@ class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder
         notifyDataSetChanged()
     }
 }
+
+/**
+ * Gonna handle an item being clicked in the recyclerview
+ */
+//class MetarListener(){
+//    fun onClick(metar: Metar) =
+//}
