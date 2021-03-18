@@ -16,15 +16,20 @@ import com.lbaron.flyingweather.data.Metar
 import com.lbaron.flyingweather.data.MetarViewModel
 import com.lbaron.flyingweather.models.MetarResponse
 import com.lbaron.flyingweather.network.MetarAPIService
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
+import me.everything.providers.android.calendar.Calendar
+import me.everything.providers.android.calendar.CalendarProvider
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-
+import java.util.jar.Manifest
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
+import com.livinglifetechway.quickpermissions_kotlin.util.QuickPermissionsRequest
+import com.livinglifetechway.quickpermissions_kotlin.util.QuickPermissionsOptions
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mMetarViewModel : MetarViewModel
-    private lateinit var deletedMetar : Metar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +39,7 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "Checking Internet Connected")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
-            val airports : Array<String> = arrayOf("EGPF", "EGBB", "LFPG", "LFPG","ZZZZ")
+            val airports : Array<String> = arrayOf("EGPF", "EGBB", "LFPG", "LFPG", "ZZZZ")
             for (item in airports){
                 u.l(this, item)
                 getMetar(item)
@@ -53,6 +58,17 @@ class MainActivity : AppCompatActivity() {
         fabDeleteAll.setOnClickListener(){
             mMetarViewModel.deleteAllMetars()
         }
+
+        runWithPermissions(android.Manifest.permission.READ_CALENDAR){
+            u.l(this,"TEST")
+            val calendarProvider = CalendarProvider(this)
+            val calendars: List<Calendar> = calendarProvider.calendars.list
+
+        }
+
+//        val calendars: List<Calendar> = calendarProvider.calendars.list
+//        u.l(this,calendarProvider.calendars.toString())
+
     }
 
     /**
@@ -85,7 +101,7 @@ class MainActivity : AppCompatActivity() {
         listCall.enqueue(object : Callback<MetarResponse> {
             override fun onResponse(call: Call<MetarResponse>, response: Response<MetarResponse>?) {
                 u.l(this@MainActivity, "Callback onResponse")
-                u.l(this@MainActivity,"URL: " + call.request().url.toString())
+                u.l(this@MainActivity, "URL: " + call.request().url.toString())
                 if (response!!.isSuccessful) {
                     u.l(this@MainActivity, "Response Successful")
                     val metarResponse: MetarResponse? = response.body()
@@ -93,7 +109,7 @@ class MainActivity : AppCompatActivity() {
                     u.l(this@MainActivity, metarResponseJsonString)
                     val metar = Gson().fromJson(metarResponseJsonString, MetarResponse::class.java)
                     u.l(this@MainActivity, metar.raw)
-                    val metarToAdd = Metar( metar.station, metar.raw)
+                    val metarToAdd = Metar(metar.station, metar.raw)
                     u.l(this@MainActivity, "Adding ${metar.station} to database")
                     mMetarViewModel.addMetar(metarToAdd)
 
@@ -104,9 +120,9 @@ class MainActivity : AppCompatActivity() {
                     val metarResponseJsonString = Gson().toJson(metarResponse)
                     u.e(this@MainActivity, metarResponseJsonString)
                     when (rc) {
-                        400 -> u.e(this@MainActivity,"Error 400 "+ "Bad Request - check airport: ${call.request().url}")
-                        404 -> u.e(this@MainActivity,"Error 404 "+ "Not found")
-                        else -> u.e(this@MainActivity,"Error ?? "+ "Generic Error")
+                        400 -> u.e(this@MainActivity, "Error 400 " + "Bad Request - check airport: ${call.request().url}")
+                        404 -> u.e(this@MainActivity, "Error 404 " + "Not found")
+                        else -> u.e(this@MainActivity, "Error ?? " + "Generic Error")
                     }
                 }
             }
@@ -115,7 +131,7 @@ class MainActivity : AppCompatActivity() {
                 u.e(this@MainActivity, "In onFailure")
                 u.e(this@MainActivity, "Url: " + call.request().url.toString())
                 u.e(this@MainActivity, "Error: " + t.message.toString())
-                if(t is IOException){
+                if (t is IOException) {
                     u.e(this@MainActivity, "This is an IO error")
                 }
             }
@@ -127,24 +143,23 @@ class MainActivity : AppCompatActivity() {
      * This will get the metars from the database and show the recyclerview
      */
     private fun setupRecyclerView(){
-        u.l (this, "making dummy recyclerview")
+        u.l(this, "making dummy recyclerview")
         val recyclerView = findViewById<RecyclerView>(R.id.metar_recycler_view)
 
 
 
         // Below are the three lines that actually set up the recycler view
         // Adapter takes a lambda function as a parameter - this will go through to what happens onClick
-        val adapter = MetarItemAdapter {
-            m: Metar ->
+        val adapter = MetarItemAdapter { m: Metar ->
             mMetarViewModel.deleteMetar(m)
         }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this) // Linear layout manager for a vertical scrolling list
 
         // Metar viewModel initialisation (database stuff)
-        mMetarViewModel = ViewModelProvider(this ).get(MetarViewModel::class.java)
+        mMetarViewModel = ViewModelProvider(this).get(MetarViewModel::class.java)
         // Calling readAllData (database) and making code to run when it is observed -> to the adapter
-        mMetarViewModel.readAllData.observe( this ,{ metars ->
+        mMetarViewModel.readAllData.observe(this, { metars ->
             adapter.setData(metars)
         })
         recyclerView.setHasFixedSize(true)                              // This is a performance optimisation

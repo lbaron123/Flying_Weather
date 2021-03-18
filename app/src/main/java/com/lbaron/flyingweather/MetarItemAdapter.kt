@@ -46,8 +46,6 @@ class MetarItemAdapter(val deleteMetar: (Metar) -> Unit) : RecyclerView.Adapter<
         holder.tvAirportName.text = currentItem.station
         holder.tvMetar.text = currentItem.metar
         holder.tvMetar.setOnClickListener {
-            //onClick(holder.tvMetar.text.toString())
-            u.l(holder.tvMetar.context,"Hello")
             deleteMetar(currentItem)
         }
     }
