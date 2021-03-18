@@ -58,16 +58,7 @@ class MainActivity : AppCompatActivity() {
         fabDeleteAll.setOnClickListener(){
             mMetarViewModel.deleteAllMetars()
         }
-
-        runWithPermissions(android.Manifest.permission.READ_CALENDAR){
-            u.l(this,"TEST")
-            val calendarProvider = CalendarProvider(this)
-            val calendars: List<Calendar> = calendarProvider.calendars.list
-
-        }
-
-//        val calendars: List<Calendar> = calendarProvider.calendars.list
-//        u.l(this,calendarProvider.calendars.toString())
+        doCalendarStuff()
 
     }
 
@@ -182,5 +173,26 @@ class MainActivity : AppCompatActivity() {
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
 
     }
+
+    private fun doCalendarStuff(){
+        u.l(this, "Do calendar stuff")
+        runWithPermissions(android.Manifest.permission.READ_CALENDAR){
+            u.l(this,"We have permission to read calendar")
+            val calendarProvider = CalendarProvider(this)
+            val calendars: List<Calendar> = calendarProvider.calendars.list
+            var events = mutableListOf<calendarEvent>()
+            for (i in 1000..1200){
+                var desc: String? = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
+                if (desc?.length!! > 2){
+                    var event = calendarEvent(i.toLong() ,desc)
+                    events.add(event)
+
+                }
+            }
+            u.l(this,"Stop here")
+        }
+
+    }
+
 
 }
