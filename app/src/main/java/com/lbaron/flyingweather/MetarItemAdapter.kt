@@ -13,9 +13,10 @@ import com.lbaron.flyingweather.data.Metar
  * Implemented onCreateViewHolder onBindViewHolder getItemCount by pressing CTRL-I inside the class
  * @param metarList list of our objects to go into the recyclerview - private because it only needs to be accessed in the class
  */
-class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder>() {
+class MetarItemAdapter(val deleteMetar: (Metar) -> Unit) : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder>() {
 
     private var metarList = emptyList<Metar>()
+
 
     /**
      * onCreateViewHolder is called by RV when it is time to create a new viewholder
@@ -38,13 +39,17 @@ class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder
      * @param position of the item in the list
      */
     override fun onBindViewHolder(holder: MetarViewHolder, position: Int) {
-        // Want position of item in dataset is same as what we display
+        // Want position of item in dataset - is what we display
         // metarList from the class constructor - all the data
         val currentItem = metarList[position]
         // holder contains references to the views as defined below
         holder.tvAirportName.text = currentItem.station
         holder.tvMetar.text = currentItem.metar
-
+        holder.tvMetar.setOnClickListener {
+            //onClick(holder.tvMetar.text.toString())
+            u.l(holder.tvMetar.context,"Hello")
+            deleteMetar(currentItem)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -73,10 +78,3 @@ class MetarItemAdapter() : RecyclerView.Adapter<MetarItemAdapter.MetarViewHolder
         notifyDataSetChanged()
     }
 }
-
-/**
- * Gonna handle an item being clicked in the recyclerview
- */
-//class MetarListener(){
-//    fun onClick(metar: Metar) =
-//}

@@ -2,13 +2,11 @@ package com.lbaron.flyingweather
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +16,6 @@ import com.lbaron.flyingweather.data.Metar
 import com.lbaron.flyingweather.data.MetarViewModel
 import com.lbaron.flyingweather.models.MetarResponse
 import com.lbaron.flyingweather.network.MetarAPIService
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
@@ -131,10 +128,16 @@ class MainActivity : AppCompatActivity() {
      */
     private fun setupRecyclerView(){
         u.l (this, "making dummy recyclerview")
-
         val recyclerView = findViewById<RecyclerView>(R.id.metar_recycler_view)
+
+
+
         // Below are the three lines that actually set up the recycler view
-        val adapter = MetarItemAdapter()
+        // Adapter takes a lambda function as a parameter - this will go through to what happens onClick
+        val adapter = MetarItemAdapter {
+            m: Metar ->
+            mMetarViewModel.deleteMetar(m)
+        }
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this) // Linear layout manager for a vertical scrolling list
 
