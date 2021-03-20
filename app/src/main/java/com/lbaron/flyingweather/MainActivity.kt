@@ -35,12 +35,6 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "Checking Internet Connected")
         if(u.isNetworkAvailable(this)){
             u.l(this, "Connected to Internet")
-            val airports : Array<String> = arrayOf("EGPF", "EGBB", "LFPG", "LFPG", "ZZZZ")
-            for (item in airports){
-                u.l(this, item)
-                getMetar(item)
-            }
-            u.l(this, "Finished metar code")
         } else {
             u.l(this, "No Internet Connection")
         }
