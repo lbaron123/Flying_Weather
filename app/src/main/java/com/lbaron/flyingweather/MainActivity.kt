@@ -12,20 +12,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
-import com.lbaron.flyingweather.data.Metar
-import com.lbaron.flyingweather.data.MetarViewModel
-import com.lbaron.flyingweather.models.MetarResponse
+import com.lbaron.flyingweather.metarData.Metar
+import com.lbaron.flyingweather.metarData.MetarViewModel
+import com.lbaron.flyingweather.weatherModels.MetarResponse
 import com.lbaron.flyingweather.network.MetarAPIService
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import me.everything.providers.android.calendar.Calendar
 import me.everything.providers.android.calendar.CalendarProvider
 import retrofit2.*
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import java.util.jar.Manifest
-import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import com.livinglifetechway.quickpermissions_kotlin.util.QuickPermissionsRequest
-import com.livinglifetechway.quickpermissions_kotlin.util.QuickPermissionsOptions
+import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
 
@@ -178,18 +174,22 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "Do calendar stuff")
         runWithPermissions(android.Manifest.permission.READ_CALENDAR){
             u.l(this,"We have permission to read calendar")
-            val calendarProvider = CalendarProvider(this)
-            val calendars: List<Calendar> = calendarProvider.calendars.list
-            var events = mutableListOf<calendarEvent>()
-            for (i in 1000..1200){
-                var desc: String? = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
-                if (desc?.length!! > 2){
-                    var event = calendarEvent(i.toLong() ,desc)
-                    events.add(event)
-
+            val time = measureTimeMillis {
+                val calendarProvider = CalendarProvider(this)
+                val events = mutableListOf<calendarEvent>()
+                for (i in 1150..1200){
+                    val desc: String = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
+                    if (desc.length > 2){
+                        if(desc.contains("PFO")){
+                            val event = calendarEvent(i.toLong() ,desc)
+                            u.l(this, event.desc)
+                            events.add(event)
+                        }
+                    }
                 }
             }
-            u.l(this,"Stop here")
+
+            u.l(this,"Time taken = ${time/1000}")
         }
 
     }

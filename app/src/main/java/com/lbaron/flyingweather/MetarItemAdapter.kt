@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.lbaron.flyingweather.data.Metar
+import com.lbaron.flyingweather.metarData.Metar
 
 /**
  * In agle brackets in RV.Adapter we have out MetarViewHolder defined as a nested class below

@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
-import com.lbaron.flyingweather.models.MetarResponse
 
 /**
  * Utils Object - for each activity must set u.context first

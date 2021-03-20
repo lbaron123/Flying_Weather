@@ -1,11 +1,10 @@
 package com.lbaron.flyingweather.network
 
-import com.lbaron.flyingweather.models.MetarResponse
+import com.lbaron.flyingweather.weatherModels.MetarResponse
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import retrofit2.http.Url
 
 /**
   * From what I can see, we can make an object of the from retrofit.create<MetarAPIService>(MetarAPIService::class.java)
