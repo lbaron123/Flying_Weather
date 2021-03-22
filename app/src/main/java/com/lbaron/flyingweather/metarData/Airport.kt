@@ -9,7 +9,12 @@ import androidx.room.PrimaryKey
 data class Airport(
     @PrimaryKey(autoGenerate = false)
     val icao : String,
+    val type : String?,
     val name : String?,
+    val latitude : Double,
+    val longitude : Double,
+    val elevation : Int?,
+    val country : String,
     val municipality : String?,
     val scheduled : Boolean,
     val iata : String?
