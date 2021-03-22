@@ -1,6 +1,6 @@
 package com.lbaron.flyingweather
 
-data class calendarEvent(
+data class CalendarEvent(
     val id : Long,
     val desc: String
 )

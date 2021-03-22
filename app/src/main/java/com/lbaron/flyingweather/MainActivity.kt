@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
         u.l(this, "Retrofit object: $retrofit.")
         // Create an object of the WeatherService that we made
         u.l(this, "Making the API service")
-        val service: MetarAPIService = retrofit.create<MetarAPIService>(MetarAPIService::class.java)
+        val service: MetarAPIService = retrofit.create(MetarAPIService::class.java)
         val listCall: Call<MetarResponse> = service.getMetarAPIService(
                 airportICAO,
                 Constants.API_KEY
@@ -170,12 +170,12 @@ class MainActivity : AppCompatActivity() {
             u.l(this,"We have permission to read calendar")
             val time = measureTimeMillis {
                 val calendarProvider = CalendarProvider(this)
-                val events = mutableListOf<calendarEvent>()
+                val events = mutableListOf<CalendarEvent>()
                 for (i in 1150..1200){
                     val desc: String = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
                     if (desc.length > 2){
                         if(desc.contains("PFO")){
-                            val event = calendarEvent(i.toLong() ,desc)
+                            val event = CalendarEvent(i.toLong() ,desc)
                             u.l(this, event.desc)
                             events.add(event)
                         }
@@ -185,8 +185,5 @@ class MainActivity : AppCompatActivity() {
 
             u.l(this,"Time taken = ${time/1000}")
         }
-
     }
-
-
 }
