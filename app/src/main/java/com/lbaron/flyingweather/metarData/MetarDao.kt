@@ -19,4 +19,7 @@ interface MetarDao {
     @Query("SELECT * FROM metar_table ORDER BY station ASC")
     fun readAllData():LiveData<List<Metar>>
 
+//    @Query("SELECT icao from airport_table")
+//    suspend fun icaoList():List<String>
+
 }

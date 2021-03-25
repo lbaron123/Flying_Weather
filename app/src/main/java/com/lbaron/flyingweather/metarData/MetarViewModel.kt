@@ -14,11 +14,13 @@ import kotlinx.coroutines.launch
 class MetarViewModel(application: Application) : AndroidViewModel(application){
     val readAllData : LiveData<List<Metar>>
     private val repository: MetarRepository
+    //val icaoList : List<String>
 
     init {
         val metarDao = MetarDatabase.getDatabase(application).metarDao()
         repository = MetarRepository(metarDao)
         readAllData = repository.readAllData
+        //icaoList = repository.icaoList
     }
 
     /**
@@ -42,4 +44,5 @@ class MetarViewModel(application: Application) : AndroidViewModel(application){
             repository.deleteAllMetars()
         }
     }
+
 }

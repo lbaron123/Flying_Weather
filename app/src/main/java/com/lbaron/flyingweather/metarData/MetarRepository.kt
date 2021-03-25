@@ -19,4 +19,8 @@ class MetarRepository(private val metarDao : MetarDao) {
     suspend fun deleteAllMetars(){
         metarDao.deleteAllMetars()
     }
+
+//    suspend fun icaoList(){
+//        metarDao.icaoList()
+//    }
 }

@@ -4,8 +4,7 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.Window
 import android.view.WindowManager
-import android.widget.Button
-import android.widget.EditText
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -151,7 +150,14 @@ class MainActivity : AppCompatActivity() {
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.add_airport_dialog)
-        val etIcaoInput : EditText = dialog.findViewById(R.id.et_icao_input)
+
+        // Code below handles the autocomplete of the dialogue
+        //val list = mMetarViewModel.icaoList
+        val list = listOf("EGGD", "EGLL","EGKK","EGBB","EGBB","EGPF","EGPH")
+        val etIcaoInput : AutoCompleteTextView = dialog.findViewById(R.id.et_icao_input)
+        val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item, list)
+        etIcaoInput.threshold = 1
+        etIcaoInput.setAdapter(arrayAdapter)
 
         val btnSubmitAirport : Button = dialog.findViewById(R.id.btn_submit_airport)
         btnSubmitAirport.setOnClickListener {
