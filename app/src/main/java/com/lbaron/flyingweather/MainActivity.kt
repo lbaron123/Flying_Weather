@@ -156,7 +156,7 @@ class MainActivity : AppCompatActivity() {
         val list = listOf("EGGD", "EGLL","EGKK","EGBB","EGBB","EGPF","EGPH")
         val etIcaoInput : AutoCompleteTextView = dialog.findViewById(R.id.et_icao_input)
         val arrayAdapter = ArrayAdapter<String>(this, android.R.layout.select_dialog_item, list)
-        etIcaoInput.threshold = 1
+        etIcaoInput.threshold = 1 // Threshold is how many letters need to be written so that the autocomplete happens
         etIcaoInput.setAdapter(arrayAdapter)
 
         val btnSubmitAirport : Button = dialog.findViewById(R.id.btn_submit_airport)
