@@ -164,6 +164,7 @@ class MainActivity : AppCompatActivity() {
             getMetar(etIcaoInput.text.toString())
             dialog.dismiss()
         }
+        // Comment here
         etIcaoInput.requestFocus()
         dialog.show()
         dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
