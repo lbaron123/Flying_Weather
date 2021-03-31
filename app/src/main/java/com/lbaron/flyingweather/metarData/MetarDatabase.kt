@@ -5,7 +5,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database (entities = [Metar::class, Airport::class], version = 4, exportSchema = true) // Entities are our tables defined by the appropriate class
+@Database (entities = [Metar::class, Airport::class, airports2::class], version = 6, exportSchema = true) // Entities are our tables defined by the appropriate class
 abstract class MetarDatabase : RoomDatabase() {
 
     abstract fun metarDao(): MetarDao
