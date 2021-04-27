@@ -14,7 +14,7 @@ import android.widget.Toast
  */
 object u {
     fun l(context: Context, message: String?){
-        //Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         Log.i(getApplicationName(context), message!!)
     }
     fun e(context: Context, message: String?){
