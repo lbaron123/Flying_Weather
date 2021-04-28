@@ -22,7 +22,6 @@
             android:text="@string/icao_code"
             android:textSize="24sp" />
 
-
         <TextView
             android:id="@+id/tv_metar"
             android:layout_width="wrap_content"

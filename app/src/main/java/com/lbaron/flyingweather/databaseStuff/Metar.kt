@@ -1,4 +1,4 @@
-package com.lbaron.flyingweather.metarData
+package com.lbaron.flyingweather.databaseStuff
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

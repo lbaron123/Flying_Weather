@@ -1,9 +1,7 @@
 package com.lbaron.flyingweather
 
 import android.app.Dialog
-import android.content.ContentValues
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import android.widget.ArrayAdapter
@@ -14,9 +12,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
-import com.lbaron.flyingweather.metarData.Metar
-import com.lbaron.flyingweather.metarData.MetarViewModel
+import com.lbaron.flyingweather.adapters.MetarItemAdapter
+import com.lbaron.flyingweather.databaseStuff.Metar
+import com.lbaron.flyingweather.databaseStuff.MetarViewModel
 import com.lbaron.flyingweather.network.MetarAPIService
+import com.lbaron.flyingweather.utility.Constants
+import com.lbaron.flyingweather.utility.u
 import com.lbaron.flyingweather.weatherModels.MetarResponse
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import me.everything.providers.android.calendar.CalendarProvider
@@ -28,12 +29,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import kotlin.system.measureTimeMillis
 
-class MainContent : Fragment() {
+class GeneralWeatherListFragment : Fragment() {
 
     private lateinit var mMetarViewModel : MetarViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main_content, container, false)
+        return inflater.inflate(R.layout.general_weather_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,8 +115,8 @@ class MainContent : Fragment() {
             override fun onResponse(call: Call<MetarResponse>, response: Response<MetarResponse>?) {
                 u.l(requireActivity().applicationContext, "Callback onResponse")
                 u.l(requireActivity().applicationContext, "URL: " + call.request().url.toString())
-                if (response!!.isSuccessful) {
-                    u.l(requireActivity().applicationContext, "Response Successful")
+                if (response!!.code() == 200) {
+                    u.l(requireActivity().applicationContext, "Response Successful - code ${response.code()}")
                     val metarResponse: MetarResponse? = response.body()
                     val metarResponseJsonString = Gson().toJson(metarResponse)
                     u.l(requireActivity().applicationContext, metarResponseJsonString)
@@ -134,6 +135,7 @@ class MainContent : Fragment() {
                     when (rc) {
                         400 -> u.e(requireActivity().applicationContext, "Error 400 " + "Bad Request - check airport: ${call.request().url}")
                         404 -> u.e(requireActivity().applicationContext, "Error 404 " + "Not found")
+                        204 -> u.e(requireActivity().applicationContext, "Error 204 " + "No content - airport doesn't have METAR")
                         else -> u.e(requireActivity().applicationContext, "Error ?? " + "Generic Error")
                     }
                 }
@@ -151,31 +153,30 @@ class MainContent : Fragment() {
         u.l(requireActivity().applicationContext, "Finished building the enqueue")
     }
 
-
     private fun showDialog() {
         val dialog = Dialog(requireActivity())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.add_airport_dialog)
 
-        // Code below handles the autocomplete of the dialogue
-        //val list = mMetarViewModel.icaoList
-        val list = listOf("EGGD", "EGLL","EGKK","EGBB","EGBB","EGPF","EGPH")
-        val etIcaoInput : AutoCompleteTextView = dialog.findViewById(R.id.et_icao_input)
-        val arrayAdapter = ArrayAdapter<String>(requireActivity().applicationContext, android.R.layout.select_dialog_item, list)
-        etIcaoInput.threshold = 1 // Threshold is how many letters need to be written so that the autocomplete happens
-        etIcaoInput.setAdapter(arrayAdapter)
+        // TODO - Do this observe earlier somewhere so it doesn't take so much time
+        // TODO - Dialog to a fragment or something
+        mMetarViewModel.icaoList.observe(viewLifecycleOwner, {list ->
+            val arrayAdapter = ArrayAdapter<String>(requireActivity(), android.R.layout.select_dialog_item, list)
+            val etIcaoInput : AutoCompleteTextView = dialog.findViewById(R.id.et_icao_input)
 
-        val btnSubmitAirport : Button = dialog.findViewById(R.id.btn_submit_airport)
-        btnSubmitAirport.setOnClickListener {
-            getMetar(etIcaoInput.text.toString())
-            dialog.dismiss()
-        }
-        // Comment here
-        etIcaoInput.requestFocus()
-        dialog.show()
-        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
-
+            etIcaoInput.threshold = 1 // Threshold is how many letters need to be written so that the autocomplete happens
+            etIcaoInput.setAdapter(arrayAdapter)
+            val btnSubmitAirport : Button = dialog.findViewById(R.id.btn_submit_airport)
+            btnSubmitAirport.setOnClickListener {
+                getMetar(etIcaoInput.text.toString())
+                dialog.dismiss()
+            }
+            // Comment here
+            etIcaoInput.requestFocus()
+            dialog.show()
+            dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+        })
     }
 
     private fun doCalendarStuff(){

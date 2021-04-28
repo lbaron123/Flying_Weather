@@ -6,16 +6,16 @@
     app:startDestination="@id/titleFragment">
     <fragment
         android:id="@+id/titleFragment"
-        android:name="com.lbaron.flyingweather.TitleFragment"
+        android:name="com.lbaron.flyingweather.CalendarViewFragment"
         android:label="fragment_title"
-        tools:layout="@layout/fragment_title" >
+        tools:layout="@layout/calendar_view_layout" >
         <action
             android:id="@+id/action_titleFragment_to_mainContent"
             app:destination="@id/mainContent" />
     </fragment>
     <fragment
         android:id="@+id/mainContent"
-        android:name="com.lbaron.flyingweather.MainContent"
+        android:name="com.lbaron.flyingweather.GeneralWeatherListFragment"
         android:label="fragment_main_content"
-        tools:layout="@layout/fragment_main_content" />
+        tools:layout="@layout/general_weather_fragment" />
 </navigation>

@@ -1,4 +1,4 @@
-package com.lbaron.flyingweather
+package com.lbaron.flyingweather.utility
 
 object Constants {
     const val API_KEY = "nepm29k0JOnVsGUdxyb1NXhr2ob7xa1X2FTz0A85EFE"

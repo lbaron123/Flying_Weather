@@ -1,4 +1,4 @@
-package com.lbaron.flyingweather.metarData
+package com.lbaron.flyingweather.databaseStuff
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
@@ -19,7 +19,7 @@ interface MetarDao {
     @Query("SELECT * FROM metar_table ORDER BY station ASC")
     fun readAllData():LiveData<List<Metar>>
 
-//    @Query("SELECT icao from airport_table")
-//    suspend fun icaoList():List<String>
+    @Query("SELECT icao from airport_table")
+    fun icaoList():LiveData<List<String>>
 
 }

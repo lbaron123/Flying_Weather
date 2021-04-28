@@ -1,4 +1,4 @@
-package com.lbaron.flyingweather.metarData
+package com.lbaron.flyingweather.databaseStuff
 
 import android.content.Context
 import androidx.room.Database

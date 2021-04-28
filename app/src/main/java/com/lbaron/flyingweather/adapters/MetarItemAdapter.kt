@@ -1,11 +1,12 @@
-package com.lbaron.flyingweather
+package com.lbaron.flyingweather.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.lbaron.flyingweather.metarData.Metar
+import com.lbaron.flyingweather.R
+import com.lbaron.flyingweather.databaseStuff.Metar
 
 /**
  * In agle brackets in RV.Adapter we have out MetarViewHolder defined as a nested class below
@@ -29,7 +30,7 @@ class MetarItemAdapter(val deleteMetar: (Metar) -> Unit) : RecyclerView.Adapter<
         // LayoutInflator turns xml into the itemView of the required type
         // Parent is the recyclerview, context is the activity we are in
 
-        return MetarViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.recyclerview_item_layout, parent, false))
+        return MetarViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.general_weather_recyclerview_item_layout, parent, false))
     }
 
     /**

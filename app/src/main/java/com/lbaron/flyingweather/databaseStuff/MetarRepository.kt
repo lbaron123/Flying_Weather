@@ -1,4 +1,4 @@
-package com.lbaron.flyingweather.metarData
+package com.lbaron.flyingweather.databaseStuff
 
 import androidx.lifecycle.LiveData
 
@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
   */
 class MetarRepository(private val metarDao : MetarDao) {
     val readAllData: LiveData<List<Metar>> = metarDao.readAllData()
+    val icaoList: LiveData<List<String>> = metarDao.icaoList()
 
     suspend fun addMetar(metar: Metar){
         metarDao.addMetar(metar)
@@ -20,7 +21,5 @@ class MetarRepository(private val metarDao : MetarDao) {
         metarDao.deleteAllMetars()
     }
 
-//    suspend fun icaoList(){
-//        metarDao.icaoList()
-//    }
+
 }
