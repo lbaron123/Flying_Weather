@@ -19,15 +19,12 @@ import com.lbaron.flyingweather.network.MetarAPIService
 import com.lbaron.flyingweather.utility.Constants
 import com.lbaron.flyingweather.utility.u
 import com.lbaron.flyingweather.weatherModels.MetarResponse
-import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import me.everything.providers.android.calendar.CalendarProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
-import kotlin.system.measureTimeMillis
 
 class GeneralWeatherListFragment : Fragment() {
 
@@ -56,7 +53,6 @@ class GeneralWeatherListFragment : Fragment() {
         fabDeleteAll.setOnClickListener(){
             mMetarViewModel.deleteAllMetars()
         }
-        doCalendarStuff()
     }
 
     /**
@@ -177,28 +173,5 @@ class GeneralWeatherListFragment : Fragment() {
             dialog.show()
             dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
         })
-    }
-
-    private fun doCalendarStuff(){
-        u.l(requireActivity().applicationContext, "Do calendar stuff")
-        runWithPermissions(android.Manifest.permission.READ_CALENDAR){
-            u.l(requireActivity().applicationContext,"We have permission to read calendar")
-            val time = measureTimeMillis {
-                val calendarProvider = CalendarProvider(requireActivity().applicationContext)
-                val events = mutableListOf<CalendarEvent>()
-                for (i in 1150..1200){
-                    val desc: String = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
-                    if (desc.length > 2){
-                        if(desc.contains("PFO")){
-                            val event = CalendarEvent(i.toLong() ,desc)
-                            u.l(requireActivity().applicationContext, event.desc)
-                            events.add(event)
-                        }
-                    }
-                }
-            }
-
-            u.l(requireActivity().applicationContext,"Time taken = ${time/1000}")
-        }
     }
 }
