@@ -5,4 +5,6 @@
     <string name="submit">Submit</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="day">Day</string>
+    <string name="no_flying_today">No flying today</string>
+    <string name="newText">programmatically created TextView1</string>
 </resources>

@@ -1,8 +1,8 @@
 package com.lbaron.flyingweather.adapters
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
@@ -41,9 +41,10 @@ class CalendarItemAdapter(private var dayList: ArrayList<String>) : RecyclerView
         val currentItem = dayList[position]
         // holder contains references to the views as defined below
         holder.tvDay.text = currentItem
-        holder.tvDay.setOnClickListener {
-            // TODO - what happens on Click
-        }
+        holder.tvWeather1.visibility = VISIBLE
+        holder.tvWeather2.visibility = VISIBLE
+        holder.tvWeather3.visibility = VISIBLE
+        holder.tvWeather4.visibility = VISIBLE
     }
 
     override fun getItemCount(): Int {
@@ -57,8 +58,12 @@ class CalendarItemAdapter(private var dayList: ArrayList<String>) : RecyclerView
      *  We will have as many viewholders as required to fill the screen plus a bit of margin
      * @param itemView is one instance of our row layout - it contains the references to our textviews
      */
-    class DayViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView) {
+    class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: TextView = itemView.findViewById(R.id.tv_day)
+        val tvWeather1: TextView = itemView.findViewById(R.id.tv_weather1)
+        val tvWeather2: TextView = itemView.findViewById(R.id.tv_weather2)
+        val tvWeather3: TextView = itemView.findViewById(R.id.tv_weather3)
+        val tvWeather4: TextView = itemView.findViewById(R.id.tv_weather4)
     }
 
     /**
