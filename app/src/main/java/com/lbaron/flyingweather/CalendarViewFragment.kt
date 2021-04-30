@@ -9,24 +9,36 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.lbaron.flyingweather.adapters.CalendarItemAdapter
+import com.lbaron.flyingweather.databaseStuff.MetarViewModel
 import com.lbaron.flyingweather.utility.u
 import me.everything.providers.android.calendar.CalendarProvider
-import java.time.LocalDate
+import java.time.*
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeFormatter.BASIC_ISO_DATE
-import java.time.format.DateTimeFormatter.RFC_1123_DATE_TIME
 import kotlin.collections.ArrayList
-import kotlin.system.measureTimeMillis
 
 
 class CalendarViewFragment : Fragment() {
 
+    private lateinit var mMetarViewModel : MetarViewModel
+    private lateinit var iataCodes : List<String>
+    private var datesRaw : ArrayList<LocalDate> = arrayListOf()
+    companion object{
+        private const val READ_CALENDAR_PERMISSION_CODE = 1
+        private const val noDays = 100
+    }
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
+        // Keeps a list of the iataCodes for use later in the calendar stuff
+        mMetarViewModel = ViewModelProvider(this).get(MetarViewModel::class.java)
             return inflater.inflate(R.layout.calendar_view_layout, container, false)
+
 
     }
 
@@ -42,12 +54,13 @@ class CalendarViewFragment : Fragment() {
     private fun setupRecyclerView(){
         val recyclerView = requireView().findViewById<RecyclerView>(R.id.calendar_recycler_view)
         // Getting the days to put in recyclerview
-        // Belopw block generates an array list of 100 days in format - Tuesday 04 June
+        // Below block generates an array list of noDays days in format - Tuesday 04 June
+        // TODO - ensure that timezones are used correctly here
         val dates = ArrayList<String>()
-        val today = LocalDate.now().toString()
         val formatter = DateTimeFormatter.ofPattern("EEEE dd MMM")
         for (i in 0..noDays){
-            val day = LocalDate.parse(today).plusDays(i.toLong())
+            val day = LocalDate.now().plusDays(i.toLong())
+            datesRaw.add(day)
             val dayFormatted = day.format(formatter)
             dates.add(dayFormatted)
         }
@@ -74,6 +87,7 @@ class CalendarViewFragment : Fragment() {
     }
 
     private fun doCalendarStuff(){
+        // TODO put this content in a refresh button perhaps
         u.l(requireActivity().applicationContext, "Do calendar stuff")
         // Check if we already have read_calendar permission
         if(ContextCompat.checkSelfPermission(requireActivity().applicationContext, Manifest.permission.READ_CALENDAR) == PackageManager.PERMISSION_GRANTED) {
@@ -81,26 +95,37 @@ class CalendarViewFragment : Fragment() {
         }else{
             // Request permission - calls onRequestPermissionsResult
             ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.READ_CALENDAR), READ_CALENDAR_PERMISSION_CODE )
+            // TODO what to do if it is rejected
         }
         u.l(requireActivity().applicationContext,"We have permission to read calendar")
-        val time = measureTimeMillis {
-            val calendarProvider = CalendarProvider(requireActivity().applicationContext)
-            val events = mutableListOf<CalendarEvent>()
-            for (i in 1150..1200){
-                val desc: String = calendarProvider.getEvent(i.toLong())?.description?.toString() ?: "t"
-                if (desc.length > 2){
-                    if(desc.contains("PFO")){
-                        val event = CalendarEvent(i.toLong() ,desc)
-                        u.l(requireActivity().applicationContext, event.desc)
-                        events.add(event)
-                    }
+
+
+        mMetarViewModel.iataList.observe(viewLifecycleOwner, Observer {
+            iataCodes = it
+
+        val calendarProvider = CalendarProvider(requireActivity().applicationContext)
+        val events = mutableListOf<CalendarEvent>()
+        val instantStartOfToday = LocalDate.now().atStartOfDay().toInstant(ZoneOffset.UTC)
+        val instantStartOfMaxDayInFuture = LocalDate.now().plusDays(noDays.toLong()).atStartOfDay().toInstant(ZoneOffset.UTC)
+        for (calendar in calendarProvider.calendars.list){
+            // Go through each calendar
+            u.l(requireContext().applicationContext, "Looking at calendar ${calendar.displayName}")
+            for (event in calendarProvider.getEvents(calendar.id).list){
+                //Events in a calendar
+                //u.l(requireContext().applicationContext, "Looking at event ${event.id}. Title - ${event.title}")
+                val instantEventStartTime = Instant.ofEpochMilli(event.dTStart)
+                if(instantEventStartTime.isAfter(instantStartOfToday) && instantEventStartTime.isBefore(instantStartOfMaxDayInFuture) && event.title != null){
+                    //u.l(requireContext().applicationContext, "Event happens between today and noDays in the future and title is not null")
+                    for (airportIATA in iataCodes)
+                        if  (event.title.contains(airportIATA)){
+                            u.l(requireContext().applicationContext, "Event ${event.title} starting on ${Instant.ofEpochMilli(event.dTStart)} has $airportIATA in title")
+                            events.add(CalendarEvent(event.id,event.title))
+                         }
                 }
             }
-        }
-        u.l(requireActivity().applicationContext,"Time taken = ${time/1000}")
+            }
+        u.l(requireContext().applicationContext,events.toString())
+        })
     }
-    companion object{
-        private const val READ_CALENDAR_PERMISSION_CODE = 1
-        private const val noDays = 100
-    }
+
 }

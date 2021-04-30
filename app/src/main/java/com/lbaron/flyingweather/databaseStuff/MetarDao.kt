@@ -22,4 +22,8 @@ interface MetarDao {
     @Query("SELECT icao from airport_table")
     fun icaoList():LiveData<List<String>>
 
+    @Query("SELECT iata from airport_table WHERE iata IS NOT NULL")
+    fun iataList():LiveData<List<String>>
+
+
 }

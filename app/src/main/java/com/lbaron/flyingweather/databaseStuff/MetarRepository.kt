@@ -8,6 +8,8 @@ import androidx.lifecycle.LiveData
 class MetarRepository(private val metarDao : MetarDao) {
     val readAllData: LiveData<List<Metar>> = metarDao.readAllData()
     val icaoList: LiveData<List<String>> = metarDao.icaoList()
+    val iataList: LiveData<List<String>> = metarDao.iataList()
+
 
     suspend fun addMetar(metar: Metar){
         metarDao.addMetar(metar)

@@ -15,12 +15,17 @@ class MetarViewModel(application: Application) : AndroidViewModel(application){
     val readAllData : LiveData<List<Metar>>
     private val repository: MetarRepository
     val icaoList : LiveData<List<String>>
+    val iataList : LiveData<List<String>>
+
 
     init {
         val metarDao = MetarDatabase.getDatabase(application).metarDao()
         repository = MetarRepository(metarDao)
         readAllData = repository.readAllData
         icaoList = repository.icaoList
+        iataList = repository.iataList
+
+
     }
 
     /**
