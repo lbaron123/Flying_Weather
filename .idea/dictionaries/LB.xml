@@ -5,6 +5,7 @@
       <w>icao</w>
       <w>metar</w>
       <w>metars</w>
+      <w>textviews</w>
     </words>
   </dictionary>
 </component>

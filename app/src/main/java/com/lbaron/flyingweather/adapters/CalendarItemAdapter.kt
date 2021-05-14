@@ -4,17 +4,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.lbaron.flyingweather.DayAndAirport
 import com.lbaron.flyingweather.R
+
 
 /**
  * In agle brackets in RV.Adapter we have out MetarViewHolder defined as a nested class below
  * This shows the default Adapter what viewholder we have to use
  * Implemented onCreateViewHolder onBindViewHolder getItemCount by pressing CTRL-I inside the class
- * @param dayList list of our objects to go into the recyclerview - private because it only needs to be accessed in the class
+ * @param dayAndAirports list of our objects to go into the recyclerview - private because it only needs to be accessed in the class
  */
-class CalendarItemAdapter(private var dayList: ArrayList<String>) : RecyclerView.Adapter<CalendarItemAdapter.DayViewHolder>() {
+class CalendarItemAdapter(private var dayAndAirports: ArrayList<DayAndAirport>) : RecyclerView.Adapter<CalendarItemAdapter.DayViewHolder>() {
 
     /**
      * onCreateViewHolder is called by RV when it is time to create a new viewholder
@@ -38,17 +41,29 @@ class CalendarItemAdapter(private var dayList: ArrayList<String>) : RecyclerView
     override fun onBindViewHolder(holder: DayViewHolder, position: Int) {
         // Want position of item in dataset - is what we display
         // dayList from the class constructor - all the data
-        val currentItem = dayList[position]
+        val currentItem = dayAndAirports[position]
         // holder contains references to the views as defined below
-        holder.tvDay.text = currentItem
-        holder.tvWeather1.visibility = VISIBLE
-        holder.tvWeather2.visibility = VISIBLE
-        holder.tvWeather3.visibility = VISIBLE
-        holder.tvWeather4.visibility = VISIBLE
+        holder.tvDay.text = currentItem.day
+
+        //Following code adds i textviews for each airport in the day
+        var textView: TextView
+        val layoutParams = LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.WRAP_CONTENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        )
+        val layout = holder.itemView.findViewById<LinearLayout>(R.id.ll_airports_per_day)
+        val numberOfAirports = dayAndAirports[position].airports.size
+        val currentNumberOfTextViews = layout.childCount
+        for (i in 0 until (numberOfAirports - currentNumberOfTextViews)) {
+            textView = TextView(holder.tvDay.context)
+            textView.text = dayAndAirports[position].airports[i]
+            textView.layoutParams = layoutParams
+            layout.addView(textView)
+        }
     }
 
     override fun getItemCount(): Int {
-        return dayList.size
+        return dayAndAirports.size
     }
 
     /**
@@ -60,18 +75,14 @@ class CalendarItemAdapter(private var dayList: ArrayList<String>) : RecyclerView
      */
     class DayViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val tvDay: TextView = itemView.findViewById(R.id.tv_day)
-        val tvWeather1: TextView = itemView.findViewById(R.id.tv_weather1)
-        val tvWeather2: TextView = itemView.findViewById(R.id.tv_weather2)
-        val tvWeather3: TextView = itemView.findViewById(R.id.tv_weather3)
-        val tvWeather4: TextView = itemView.findViewById(R.id.tv_weather4)
     }
 
     /**
      * Takes a list of days and sets them to the class's internal structure
      * It then notifies any observers that the data has changed
      */
-    fun setData(dayListInput: ArrayList<String>){
-        this.dayList = dayListInput
+    fun setData(dayListInput: ArrayList<DayAndAirport>){
+        this.dayAndAirports = dayListInput
         notifyDataSetChanged()
     }
 }

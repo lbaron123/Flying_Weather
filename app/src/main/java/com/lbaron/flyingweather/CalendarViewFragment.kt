@@ -25,8 +25,7 @@ import kotlin.collections.ArrayList
 class CalendarViewFragment : Fragment() {
 
     private lateinit var mMetarViewModel : MetarViewModel
-    private lateinit var iataCodes : List<String>
-    private var datesRaw : ArrayList<LocalDate> = arrayListOf()
+    private var dayAndAirports : ArrayList<DayAndAirport> = arrayListOf()
     companion object{
         private const val READ_CALENDAR_PERMISSION_CODE = 1
         private const val noDays = 100
@@ -38,14 +37,12 @@ class CalendarViewFragment : Fragment() {
         // Keeps a list of the iataCodes for use later in the calendar stuff
         mMetarViewModel = ViewModelProvider(this).get(MetarViewModel::class.java)
             return inflater.inflate(R.layout.calendar_view_layout, container, false)
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
         doCalendarStuff()
+        setupRecyclerView()
     }
 
     /**
@@ -56,17 +53,20 @@ class CalendarViewFragment : Fragment() {
         // Getting the days to put in recyclerview
         // Below block generates an array list of noDays days in format - Tuesday 04 June
         // TODO - ensure that timezones are used correctly here
-        val dates = ArrayList<String>()
         val formatter = DateTimeFormatter.ofPattern("EEEE dd MMM")
         for (i in 0..noDays){
             val day = LocalDate.now().plusDays(i.toLong())
-            datesRaw.add(day)
+            val airports = ArrayList<String>()
+            airports.add("BRS")
+            airports.add("CDG")
+
             val dayFormatted = day.format(formatter)
-            dates.add(dayFormatted)
+            dayAndAirports.add(DayAndAirport(dayFormatted, airports))
+
         }
 
         // Below are the three lines that actually set up the recycler view
-        val adapter = CalendarItemAdapter(dates)
+        val adapter = CalendarItemAdapter(dayAndAirports)
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(requireActivity().applicationContext) // Linear layout manager for a vertical scrolling list
 
@@ -100,8 +100,7 @@ class CalendarViewFragment : Fragment() {
         u.l(requireActivity().applicationContext,"We have permission to read calendar")
 
 
-        mMetarViewModel.iataList.observe(viewLifecycleOwner, Observer {
-            iataCodes = it
+        mMetarViewModel.iataList.observe(viewLifecycleOwner, Observer { iataCodes ->
 
         val calendarProvider = CalendarProvider(requireActivity().applicationContext)
         val events = mutableListOf<CalendarEvent>()
@@ -112,20 +111,21 @@ class CalendarViewFragment : Fragment() {
             u.l(requireContext().applicationContext, "Looking at calendar ${calendar.displayName}")
             for (event in calendarProvider.getEvents(calendar.id).list){
                 //Events in a calendar
-                //u.l(requireContext().applicationContext, "Looking at event ${event.id}. Title - ${event.title}")
                 val instantEventStartTime = Instant.ofEpochMilli(event.dTStart)
                 if(instantEventStartTime.isAfter(instantStartOfToday) && instantEventStartTime.isBefore(instantStartOfMaxDayInFuture) && event.title != null){
-                    //u.l(requireContext().applicationContext, "Event happens between today and noDays in the future and title is not null")
-                    for (airportIATA in iataCodes)
+                    for (airportIATA in iataCodes){
                         if  (event.title.contains(airportIATA)){
                             u.l(requireContext().applicationContext, "Event ${event.title} starting on ${Instant.ofEpochMilli(event.dTStart)} has $airportIATA in title")
-                            events.add(CalendarEvent(event.id,event.title))
-                         }
+                            events.add(CalendarEvent(event.title, event.description, instantEventStartTime, Instant.ofEpochMilli(event.dTend), airportIATA))
+                        }
+                    }
                 }
             }
-            }
-        u.l(requireContext().applicationContext,events.toString())
+        }
+            // Makes a map - key = LocalDate eg 2020-03-01, value is list of events that happen in that date
+           val dateEventMap = events.groupBy { LocalDateTime.ofInstant(it.instantStart, ZoneId.systemDefault()).toLocalDate()}
         })
+
     }
 
 }
